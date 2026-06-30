@@ -155,6 +155,19 @@ new class extends Component
                                 >
                                 View
                             </flux:button>
+                            <flux:button 
+                                icon="folder-plus"
+                                variant="primary"
+                                color="blue"
+                                size="sm"
+                                class="cursor-pointer"
+                                href="{{ route('members.view', [
+                                        'membershipId' => $member->MembershipID,
+                                        'membershipNo' => $member->membershipNo,
+                                ]) }}"
+                                >
+                                Register
+                            </flux:button>
                         </flux:table.cell>
                     </flux:table.row>
             @empty

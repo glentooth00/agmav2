@@ -3,48 +3,38 @@
 use Livewire\Component;
 use App\Models\Membership;
 
-new class extends Component
-{
+new class extends Component {
     public $member;
 
-    public function mount($membershipId, $membershipNo){
-
-        $this->member = Membership::where('MembershipID', $membershipId)
-            ->where('membershipNo', $membershipNo)->firstOrFail();
-
+    public function mount($membershipId, $membershipNo)
+    {
+        $this->member = Membership::where('MembershipID', $membershipId)->where('membershipNo', $membershipNo)->firstOrFail();
     }
 };
 ?>
 
 <div class="space-y-6">
 
-<div class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
 
-    <div>
-        <flux:heading size="xl">MCO Details</flux:heading>
-        <flux:text>Member Profile</flux:text>
+        <div>
+            <flux:heading size="xl">MCO Details</flux:heading>
+            <flux:text>Member Profile</flux:text>
+        </div>
+
+        <flux:button icon="arrow-left" variant="ghost" :href="route('members.index')">
+            Back
+        </flux:button>
+
     </div>
 
-    <flux:button
-        icon="arrow-left"
-        variant="ghost"
-        :href="route('members.index')"
-    >
-        Back
-    </flux:button>
-
-</div>
-
-<flux:separator class="mt-2" />
+    <flux:separator class="mt-1" />
 
     <!-- Profile Header -->
     <flux:card>
         <div class="flex flex-col gap-6 md:flex-row md:items-center">
 
-            <flux:avatar
-                size="xl"
-                name="{{ $member->GivenName }} {{ $member->FamilyName }}"
-            />
+            <flux:avatar size="xl" name="{{ $member->GivenName }} {{ $member->FamilyName }}" />
 
             <div class="flex-1">
 
@@ -60,24 +50,15 @@ new class extends Component
 
                 <div class="mt-4 flex flex-wrap gap-2">
 
-                    <flux:badge
-                        size="sm"
-                        :color="$member->verified ? 'emerald' : 'orange'"
-                    >
+                    <flux:badge size="sm" :color="$member->verified ? 'emerald' : 'orange'">
                         {{ $member->verified ? 'Verified' : 'Unverified' }}
                     </flux:badge>
 
-                    <flux:badge
-                        size="sm"
-                        :color="$member->uploaded ? 'emerald' : 'zinc'"
-                    >
+                    <flux:badge size="sm" :color="$member->uploaded ? 'emerald' : 'zinc'">
                         {{ $member->uploaded ? 'Documents Uploaded' : 'No Documents' }}
                     </flux:badge>
 
-                    <flux:badge
-                        size="sm"
-                        :color="$member->seminar ? 'blue' : 'amber'"
-                    >
+                    <flux:badge size="sm" :color="$member->seminar ? 'blue' : 'amber'">
                         {{ $member->seminar ? 'Seminar Completed' : 'Seminar Pending' }}
                     </flux:badge>
 
