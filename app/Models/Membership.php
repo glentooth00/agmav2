@@ -10,4 +10,11 @@ class Membership extends Model
 
     protected $table = 'membershiptemp';
 
+    // protected function casts(): array
+    // {
+    //     return [
+    //         'verified' => 'boolean',
+    //     ];
+    // }
+
 }

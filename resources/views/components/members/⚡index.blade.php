@@ -71,9 +71,10 @@ new class extends Component
 ?>
 
 <div class="space-y-4">
-    <div>
+    <div class="">
         <flux:heading size="xl">Members</flux:heading>
-        <flux:text>Manage members</flux:text>
+        <flux:text class="mb-2">Manage members</flux:text>
+        <flux:separator />
     </div>
     <div class="flex items-center gap-3">
     <flux:field class="w-32">
@@ -119,9 +120,9 @@ new class extends Component
         <flux:table.columns>
             <flux:table.column>Member Name</flux:table.column>
             <flux:table.column>Address</flux:table.column>
-            <flux:table.column>Membership ID</flux:table.column>
+            <flux:table.column>Verification</flux:table.column>
             <flux:table.column>Membership No</flux:table.column>
-            {{-- <flux:table.column>OR Number</flux:table.column> --}}
+            <flux:table.column></flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -132,9 +133,29 @@ new class extends Component
                             {{ $member->BrgyAddress }},
                             {{ $member->TownAddress }}
                         </flux:table.cell>
-                        <flux:table.cell>{{ $member->MembershipID }}</flux:table.cell>
+                        <flux:table.cell>
+                            @if ( $member->verified === 'TRUE')
+                                <flux:badge size="sm" color="lime">Verified</flux:badge>
+                            @else
+                                <flux:badge size="sm" color="orange">Unverified</flux:badge>
+                            @endif
+                        </flux:table.cell>
                         <flux:table.cell>{{ $member->membershipNo }}</flux:table.cell>
-                        {{-- <flux:table.cell>{{ $member->ORNumber }}</flux:table.cell> --}}
+                        <flux:table.cell>
+                            <flux:button 
+                                icon="eye"
+                                variant="primary"
+                                color="emerald"
+                                size="sm"
+                                class="cursor-pointer"
+                                href="{{ route('members.view', [
+                                        'membershipId' => $member->MembershipID,
+                                        'membershipNo' => $member->membershipNo,
+                                ]) }}"
+                                >
+                                View
+                            </flux:button>
+                        </flux:table.cell>
                     </flux:table.row>
             @empty
                 <flux:table.row>
