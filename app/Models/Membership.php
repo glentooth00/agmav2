@@ -8,7 +8,7 @@ class Membership extends Model
 {
     //
 
-    protected $table = 'membershiptemp';
+    protected $table = 'qmember';
 
     // protected function casts(): array
     // {

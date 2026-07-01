@@ -6,9 +6,9 @@ use App\Models\Membership;
 new class extends Component {
     public $member;
 
-    public function mount($membershipId, $membershipNo)
+    public function mount($xR, $membershipNo)
     {
-        $this->member = Membership::where('MembershipID', $membershipId)->where('membershipNo', $membershipNo)->firstOrFail();
+        $this->member = Membership::where('xR', $xR)->where('membershipNo', $membershipNo)->firstOrFail();
     }
 };
 ?>
@@ -58,8 +58,8 @@ new class extends Component {
                         {{ $member->uploaded ? 'Documents Uploaded' : 'No Documents' }}
                     </flux:badge>
 
-                    <flux:badge size="sm" :color="$member->seminar ? 'blue' : 'amber'">
-                        {{ $member->seminar ? 'Seminar Completed' : 'Seminar Pending' }}
+                    <flux:badge size="sm" :color="$member->verified ? 'blue' : 'amber'">
+                        {{ $member->verified ? 'Seminar Completed' : 'Seminar Pending' }}
                     </flux:badge>
 
                 </div>
