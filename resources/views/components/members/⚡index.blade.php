@@ -41,7 +41,9 @@ new class extends Component
     }
 
     public function getConnection($xR, $membershipNo){
-        dd($xR, $membershipNo);
+        
+        $getMember = Membership::where('xR', $xR)->where('membershipNo', $membershipNo)->firstOrFail();
+
     }
 
     public function with(): array
