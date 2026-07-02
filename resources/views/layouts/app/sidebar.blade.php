@@ -1,3 +1,6 @@
+{{-- @php
+    $totalAttendees = \App\Models\Attendees::count();
+@endphp --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
@@ -12,7 +15,7 @@
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    <flux:sidebar.item icon="home"  :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
                     
@@ -22,12 +25,11 @@
                      <flux:sidebar.item icon="users" :href="route('members.index')" :current="request()->routeIs('members.index')" wire:navigate>
                         {{ __('Members') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="rectangle-stack" :href="route('attendees.index')" :current="request()->routeIs('attendees.index')" wire:navigate>
+                    <flux:sidebar.item icon="rectangle-stack" badge="" :href="route('attendees.index')" :current="request()->routeIs('attendees.index')" wire:navigate>
                         {{ __('Attendees') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
-
             <flux:spacer />
 
             {{-- <flux:sidebar.nav>

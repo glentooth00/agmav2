@@ -13,6 +13,19 @@ return new class extends Migration
     {
         Schema::create('attendees', function (Blueprint $table) {
             $table->id();
+            $table->string('firstname');
+            $table->string('middlename');
+            $table->string('lastname');
+            $table->text('suffix')->nullable();
+            $table->text('gender')->nullable();
+            $table->string('account_number')->nullable();
+            $table->string('membership_id')->nullable();
+            $table->string('membership_no')->nullable();
+            $table->text('municipality')->nullable();
+            $table->text('barangay')->nullable();
+            $table->text('street')->nullable();
+            $table->text('membership_type')->nullable();
+            $table->string('registration_type')->nullable();
             $table->timestamps();
         });
     }

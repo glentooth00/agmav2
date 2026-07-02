@@ -12,7 +12,11 @@ class AttendeesController extends Controller
      */
     public function index()
     {
-        //
+        $totalAttendees = attendees::count();
+
+        return view('layouts.app.sidebar', [
+            'totalAttendees' => $totalAttendees,
+        ]);
     }
 
     /**

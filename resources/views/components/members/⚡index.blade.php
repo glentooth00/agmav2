@@ -1,9 +1,12 @@
 <?php
 
 use App\Models\Membership;
+use App\Models\Accounts;
+use App\Models\Attendees;
 use App\Models\Town;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Flux\flux;
 
 new class extends Component
 {
@@ -42,7 +45,33 @@ new class extends Component
 
     public function getConnection($xR, $membershipNo){
         
-        $getMember = Membership::where('xR', $xR)->where('membershipNo', $membershipNo)->firstOrFail();
+        $getConnection = Accounts::where('MembershipID', $xR)->where('ORNumber', $membershipNo)->firstOrFail();
+        $getMembership = Membership::where('xR', $xR)->where('membershipNo', $membershipNo)->firstOrFail();
+
+        $consumerData = [
+            'membership_id' => $getConnection['MembershipID'],
+            'membership_no' => $getConnection['ORNumber'],
+            'account_number' => $getConnection['AccountNumber'],
+            'firstName' => $getMembership['GivenName'],
+            'middleName' => $getMembership['MiddleName'],
+            'lastName' => $getMembership['FamilyName'],
+            'suffix' => $getMembership['subName'],
+            'registration_type' => 'Walk-in',
+            'street' => $getMembership['StreetAddress'],
+            'barangay' => $getMembership['BrgyAddress'],
+            'municipality' => $getMembership['TownAddress'],
+            'membership_type' => $getMembership['member_Type'],
+            'gender' => $getMembership['Gender'],
+        ];
+
+        attendees::create($consumerData);
+
+        Flux::toast(
+            heading: 'Success',
+            text: 'Member registered successfully.',
+            variant: 'success',
+        );
+
 
     }
 
@@ -68,7 +97,7 @@ new class extends Component
             ->when( $this->town, function ($query){
                 $query->where('TownAddress', 'LIKE' , "%{$this->town}%");
             })
-            ->when( $this->town, function ($query){
+            ->when( $this->subName, function ($query){
                 $query->where('subName', 'LIKE', "%{$this->subName}%");
             })->paginate(10);
 
@@ -78,16 +107,26 @@ new class extends Component
         ];
     }
 
-    public function save($xR, $membershipNo)
-    {
-        dd($xR, $membershipNo);
-        // $member = Membership::where('xR', $xR)->where('membershipNo', $membershipNo)->firstOrFail();
-        // $member->registered = 'True';
-        // $member->save();
+    public function checkRegistration($xR, $membershipNo){
 
-        // session()->flash('message', 'Member registered successfully.');
+        $checkRegistration = Attendees::where('membership_id', $xR)->where('membership_no', $membershipNo)->first();
+        
+        if($checkRegistration){
+            
+            Flux::toast(
+                heading: 'warning',
+                text: 'Member already registered.',
+                variant: 'warning',
+                );
 
+        }else{
+
+            $this->getConnection($xR, $membershipNo);
+        }
+        
     }
+
+
 };
 ?>
 
@@ -135,7 +174,7 @@ new class extends Component
         </flux:select>
     </flux:field>
 </div>
-    <flux:table :paginate="$members" sticky>
+    <flux:table :paginate="$members" sticky class="table-stripped">
         <flux:table.columns>
             <flux:table.column>Member Name</flux:table.column>
             <flux:table.column>Address</flux:table.column>
@@ -167,7 +206,7 @@ new class extends Component
                             @endif
                         </flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="zinc" size="sm" variant="subtle" style="letter-spacing:2px;">{{ $member->membershipNo ?? '----' }}</flux:badge>
+                            <flux:badge color="zinc" size="sm" variant="subtle" style="letter-spacing:2px;">{{ $member->membershipNo ?? '--' }}</flux:badge>
                         </flux:table.cell>
                         <flux:table.cell>
                             @if ($member->member_Type === 'Member')
@@ -179,8 +218,8 @@ new class extends Component
                         <flux:table.cell>
                             <flux:button 
                                 icon="eye"
-                                color="emerald"
-                                variant="filled"
+                                color="cyan"
+                                variant="primary"
                                 size="sm"
                                 class="cursor-pointer"
                                 href="{{ route('members.view', [
@@ -196,7 +235,7 @@ new class extends Component
                                 variant="primary"
                                 size="sm"
                                 class="cursor-pointer"
-                                wire:click="save('{{ $member->xR }}', '{{ $member->membershipNo }}')"
+                                wire:click="checkRegistration('{{ $member->xR }}', '{{ $member->membershipNo }}')"
                                 confirm="Are you sure you want to register this member?"
                                 >
                                 Register
