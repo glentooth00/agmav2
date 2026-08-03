@@ -15,6 +15,36 @@ class RegistrationController extends Controller
         return view('registration.index');
     }
 
+    public function residential()
+    {
+        return view('registration.residential');
+    }
+    public function public()
+    {
+        return view('registration.public');
+    }
+
+    public function residentialSearch(Request $request)
+    {
+        $search = $request->input('search');
+
+        $residents = Registration::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('middle_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('suffix', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $residents
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
