@@ -1,24 +1,17 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGMA 2026 Registration</title>
 
-    <title>{{ config('app.name') }}</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    @fluxAppearance
-
-    @livewireStyles
+    <link rel="stylesheet" href="{{ asset('css/registration.css') }}">
 </head>
-
-<body class="bg-zinc-100">
+<body>
 
     @yield('content')
 
-    @livewireScripts
+    <script src="{{ asset('js/registration.js') }}"></script>
 
-    @fluxScripts
 </body>
 </html>
