@@ -1,6 +1,4 @@
-{{-- @php
-    $totalAttendees = \App\Models\Attendees::count();
-@endphp --}}
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
@@ -42,7 +40,11 @@
                 </flux:sidebar.item>
             </flux:sidebar.nav> --}}
 
-            <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
+            @auth
+                <x-desktop-user-menu
+                    class="hidden lg:block"
+                    :name="auth()->user()->name" />
+            @endauth
         </flux:sidebar>
 
         <!-- Mobile User Menu -->
