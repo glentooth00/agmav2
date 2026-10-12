@@ -1,0 +1,385 @@
+/* ===========================
+   RESET
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
+    background:#f4f7fb;
+    color:#1f2937;
+}
+
+/* ===========================
+   HERO
+=========================== */
+
+.hero{
+    position:relative;
+    min-height:100vh;
+    background:url("../images/bg.jpg") center center/cover no-repeat;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:50px 20px;
+}
+
+.overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.60);
+    backdrop-filter:blur(2px);
+}
+
+.container{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:1150px;
+}
+
+/* ===========================
+   HEADER
+=========================== */
+
+.hero-card{
+    text-align:center;
+    color:#fff;
+    background:linear-gradient(135deg,#084880,#0d6cc4);
+    border-radius:24px;
+    padding:45px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+.logo{
+    width:110px;
+    height:110px;
+    object-fit:contain;
+    background:#fff;
+    border-radius:50%;
+    padding:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+.hero-card h1{
+    margin-top:20px;
+    font-size:42px;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+.hero-card h2{
+    margin-top:10px;
+    font-size:22px;
+    font-weight:500;
+    color:#dbeafe;
+}
+
+.hero-card p{
+    margin-top:8px;
+    color:#bfdcff;
+    font-size:17px;
+}
+
+/* ===========================
+   MAIN CARD
+=========================== */
+
+.main-card{
+    margin-top:-40px;
+    background:#fff;
+    border-radius:24px;
+    padding:50px;
+    box-shadow:0 25px 60px rgba(0,0,0,.15);
+}
+
+.heading{
+    text-align:center;
+}
+
+.heading h2{
+    font-size:34px;
+    color:#1f2937;
+}
+
+.heading p{
+    margin-top:12px;
+    color:#6b7280;
+    font-size:16px;
+}
+
+/* ===========================
+   REGISTRATION GRID
+=========================== */
+
+.registration-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:30px;
+    margin-top:45px;
+}
+
+.registration-card{
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    text-decoration:none;
+    color:inherit;
+    border:2px solid #e5e7eb;
+    border-radius:20px;
+    padding:35px;
+    transition:.35s;
+    background:#fff;
+}
+
+.registration-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 18px 40px rgba(0,0,0,.15);
+    border-color:#084880;
+}
+
+.registration-card:nth-child(2):hover{
+    border-color:#5CB20D;
+}
+
+.registration-card h3{
+    font-size:28px;
+    text-align:center;
+    color:#1f2937;
+}
+
+.registration-card p{
+    margin-top:20px;
+    color:#6b7280;
+    text-align:center;
+    line-height:1.7;
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+.btn{
+    margin-top:35px;
+    display:block;
+    padding:15px;
+    border-radius:12px;
+    text-align:center;
+    color:#fff;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-blue{
+    background:#084880;
+}
+
+.btn-blue:hover{
+    background:#063764;
+}
+
+.btn-green{
+    background:#5CB20D;
+}
+
+.btn-green:hover{
+    background:#498c0a;
+}
+
+/* ===========================
+   INFO
+=========================== */
+
+.info-box{
+    margin-top:45px;
+    background:#eef6ff;
+    border-left:6px solid #084880;
+    border-radius:16px;
+    padding:25px;
+}
+
+.info-box h4{
+    font-size:22px;
+    color:#084880;
+}
+
+.info-box p{
+    margin-top:10px;
+    line-height:1.8;
+    color:#374151;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media(max-width:992px){
+
+    .main-card{
+        padding:35px;
+    }
+
+    .registration-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero{
+        padding:20px 15px;
+    }
+
+    .hero-card{
+        padding:30px 20px;
+        border-radius:20px;
+    }
+
+    .logo{
+        width:85px;
+        height:85px;
+    }
+
+    .hero-card h1{
+        font-size:30px;
+    }
+
+    .hero-card h2{
+        font-size:18px;
+    }
+
+    .hero-card p{
+        font-size:15px;
+    }
+
+    .main-card{
+        margin-top:-25px;
+        padding:25px;
+        border-radius:20px;
+    }
+
+    .heading h2{
+        font-size:26px;
+    }
+
+    .heading p{
+        font-size:15px;
+    }
+
+    .registration-card{
+        padding:25px;
+    }
+
+    .registration-card h3{
+        font-size:22px;
+    }
+
+    .registration-card p{
+        font-size:15px;
+    }
+
+}
+
+@media(max-width:480px){
+
+    .hero{
+        padding:15px 10px;
+    }
+
+    .hero-card{
+        padding:25px 18px;
+    }
+
+    .main-card{
+        padding:20px;
+    }
+
+    .heading h2{
+        font-size:22px;
+    }
+
+    .registration-card{
+        padding:20px;
+    }
+
+    .btn{
+        padding:14px;
+        font-size:15px;
+    }
+
+}
+
+
+
+/* ======== residential css ======== */
+.container{
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1050px;
+    margin: auto;
+}
+
+.main-card{
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 24px;
+    padding: 50px;
+    box-shadow: 0 25px 60px rgba(0,0,0,.18);
+}
+
+.logo-small{
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 50%;
+    padding: 8px;
+    border: 4px solid #084880;
+    margin-bottom: 20px;
+}
+
+.heading{
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.heading h2{
+    font-size: 2rem;
+    color: #084880;
+    margin-bottom: 10px;
+}
+
+.heading p{
+    color: #6b7280;
+    max-width: 650px;
+    margin: auto;
+    line-height: 1.7;
+}
+
+@media (max-width:768px){
+
+    .main-card{
+        padding:30px 20px;
+        margin:20px 10px;
+    }
+
+    .logo-small{
+        width:65px;
+        height:65px;
+    }
+
+    .heading h2{
+        font-size:1.6rem;
+    }
+
+}
