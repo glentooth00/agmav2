@@ -12,11 +12,13 @@ new class extends Component
 {
     use WithPagination;
 
-    public string $town = '';
-    public string $givenName = '';
-    public string $middleName = '';
-    public string $familyName = '';
-    public string $subName = '';
+    public string $district = '';
+    public string $firstname = '';
+    public string $middlename = '';
+    public string $lastname = '';
+    public string $suffixname = '';
+    public string $membership_id = '';
+    public string $membership_no = '';
 
 
     public function updatedGivenName()
@@ -54,7 +56,7 @@ new class extends Component
             'account_number' => $getConnection['AccountNumber'],
             'firstName' => $getMembership['GivenName'],
             'middleName' => $getMembership['MiddleName'],
-            'lastName' => $getMembership['FamilyName'],
+            'lastName' => $getMembership['lastname'],
             'suffix' => $getMembership['subName'],
             'registration_type' => 'Walk-in',
             'street' => $getMembership['StreetAddress'],
@@ -77,39 +79,52 @@ new class extends Component
 
     public function with(): array
     {
-
         $towns = Town::orderBy('TownName', 'asc')->get();
 
         $members = Membership::query()
-            // Ensure all three name fields are neither NULL nor empty strings
-            ->whereNotNull('GivenName')->where('GivenName', '<>', '')
-            ->whereNotNull('MiddleName')->where('MiddleName', '<>', '')
-            ->whereNotNull('FamilyName')->where('FamilyName', '<>', '')
-            ->when( $this->givenName, function($query){
-                $query->where('GivenName', 'LIKE', "%{$this->givenName}%");
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    // Juridical members
+                    $query->where('is_juridical', '1')
+                        ->whereNotNull('firstname')
+                        ->where('firstname', '<>', '');
+                })
+                ->orWhere(function ($query) {
+                    // Regular members
+                    $query->whereNotNull('firstname')
+                        ->where('firstname', '<>', '')
+                        ->whereNotNull('middleName')
+                        ->where('middleName', '<>', '')
+                        ->whereNotNull('lastname')
+                        ->where('lastname', '<>', '');
+                });
             })
-            ->when( $this->givenName, function($query){
-                $query->where('MiddleName', 'LIKE' , "%{$this->middleName}%");
+            ->when($this->firstname, function ($query) {
+                $query->where('firstname', 'LIKE', "%{$this->firstname}%");
             })
-            ->when( $this->familyName, function($query){
-                $query->where('FamilyName', 'LIKE', "%{$this->familyName}%");
+            ->when($this->middlename, function ($query) {
+                $query->where('middleName', 'LIKE', "%{$this->middlename}%");
             })
-            ->when( $this->town, function ($query){
-                $query->where('TownAddress', 'LIKE' , "%{$this->town}%");
+            ->when($this->lastname, function ($query) {
+                $query->where('lastname', 'LIKE', "%{$this->lastname}%");
             })
-            ->when( $this->subName, function ($query){
-                $query->where('subName', 'LIKE', "%{$this->subName}%");
-            })->paginate(10);
+            ->when($this->district, function ($query) {
+                $query->where('district', 'LIKE', "%{$this->district}%");
+            })
+            ->when($this->suffixname, function ($query) {
+                $query->where('suffixname', 'LIKE', "%{$this->suffixname}%");
+            })
+            ->paginate(10);
 
         return [
             'members' => $members,
-            'towns'   => $towns
+            'towns' => $towns,
         ];
     }
 
-    public function checkRegistration($xR, $membershipNo){
+    public function checkRegistration($membership_id, $membership_no){
 
-        $checkRegistration = Attendees::where('membership_id', $xR)->where('membership_no', $membershipNo)->first();
+        $checkRegistration = Attendees::where('membership_id', $membership_id)->where('membership_no', $membership_no)->first();
         
         if($checkRegistration){
             
@@ -121,7 +136,7 @@ new class extends Component
 
         }else{
 
-            $this->getConnection($xR, $membershipNo);
+            $this->getConnection($membership_id, $membership_no);
         }
         
     }
@@ -137,16 +152,16 @@ new class extends Component
         <flux:separator />
     </div>
     <div class="flex items-center gap-3">
-    <flux:field class="w-32">
+    <flux:field class="w-64">
         <flux:input
-            wire:model.live.debounce.300ms="givenName"
+            wire:model.live.debounce.300ms="firstname"
             icon="magnifying-glass"
-            placeholder="Given Name"
+            placeholder="Firstname"
         />
     </flux:field>
     <flux:field class="w-64">
         <flux:input
-            wire:model.live.debounce.300ms="middleName"
+            wire:model.live.debounce.300ms="middlename"
             icon="magnifying-glass"
             placeholder="Middle Name"
         />
@@ -154,20 +169,20 @@ new class extends Component
 
     <flux:field class="w-64">
         <flux:input
-            wire:model.live.debounce.300ms="lastName"
+            wire:model.live.debounce.300ms="lastname"
             icon="magnifying-glass"
             placeholder="Last Name"
         />
     </flux:field>
         <flux:field class="w-64">
         <flux:input
-            wire:model.live.debounce.300ms="subName"
+            wire:model.live.debounce.300ms="suffixname"
             icon="magnifying-glass"
             placeholder="Suffix (e.g Jr, Sr, I, II, III)"
         />
     </flux:field>
     <flux:field class="w-64">
-        <flux:select wire:model.live.debounce.300ms="town" placeholder="Select town">
+        <flux:select wire:model.live.debounce.300ms="district" placeholder="Select town">
             @foreach ($towns as $town)
                 <flux:select.option>{{ $town->TownName }}</flux:select.option>
             @endforeach
@@ -178,56 +193,82 @@ new class extends Component
         <flux:table.columns>
             <flux:table.column>Member Name</flux:table.column>
             <flux:table.column>Address</flux:table.column>
-            <flux:table.column>Verification</flux:table.column>
-            <flux:table.column>Membership No</flux:table.column>
             <flux:table.column>Membership Type</flux:table.column>
+            <flux:table.column>Co-Member</flux:table.column>
+            <flux:table.column>Membership No</flux:table.column>
             <flux:table.column></flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
             @forelse ($members as $member)
                 <flux:table.row>
-                        <flux:table.cell>{{ $member->GivenName ?? 'null' }} {{ $member->MiddleName ?? 'null' }} {{ $member->FamilyName ?? null }} {{ $member->subName ?? null}}</flux:table.cell>
                         <flux:table.cell>
-                            {{ $member->BrgyAddress }},
-                            {{ $member->TownAddress }}
+                            <flux:text variant="strong" class="text-gray-600">
+                                <b>{{ $member->firstname }} {{ $member->middlename ?? '' }} {{ $member->lastname ?? null }} {{ $member->suffixname ?? null}}</b>
+                            </flux:text>    
                         </flux:table.cell>
                         <flux:table.cell>
-                            @if ($member->member_Type === 'Member')
-                                @if ($member->verified === 'True')
-                                    <flux:badge size="sm" color="lime">Verified</flux:badge>
-                                @else
-                                    <flux:badge size="sm" color="orange">Unverified</flux:badge>
-                                @endif
-                            @elseif ($member->member_Type === 'Co-member')
-                                @if ($member->verified === 'False')
-                                    <flux:badge size="sm" color="lime">Verified</flux:badge>
-                                @endif
-                            @endif
+                            {{ $member->street }}
+                            {{ $member->brgy }},
+                            {{ $member->district }}
                         </flux:table.cell>
                         <flux:table.cell>
-                            <flux:badge color="zinc" size="sm" variant="subtle" style="letter-spacing:2px;">{{ $member->membershipNo ?? '--' }}</flux:badge>
+                            @php
+                                $memberType = strtoupper(trim($member->member_type ?? ''));
+                                $isJuridical = strtoupper(trim((string) ($member->is_juridical ?? '0')));
+                            @endphp
+
+                            @switch (true)
+                                @case ($isJuridical === '1' || $isJuridical === 'YES' || $memberType === 'JURIDICAL')
+                                    <flux:badge size="sm" color="purple">Juridical</flux:badge>
+                                    @break
+
+                                @case ($memberType === 'SINGLE')
+                                    <flux:badge size="sm" color="green">SINGLE</flux:badge>
+                                    @break
+
+                                @case ($memberType === 'JOINT')
+                                    <flux:badge size="sm" color="blue">JOINT</flux:badge>
+                                    @break
+                            @endswitch
                         </flux:table.cell>
                         <flux:table.cell>
-                            @if ($member->member_Type === 'Member')
-                                <flux:badge size="sm" color="green">Member</flux:badge>
-                            @elseif ($member->member_Type === 'Co-member')
-                                <flux:badge size="sm" color="blue">Co-Member</flux:badge>
-                            @endif
+                            @php
+                                $memberType = strtoupper(trim($member->member_type ?? ''));
+                                $isJuridical = strtoupper(trim((string) ($member->is_juridical ?? '0')));
+                            @endphp
+
+                            @switch (true)
+                                @case ($isJuridical === '1' || $isJuridical === 'YES' || $memberType === 'JURIDICAL')
+                                    <flux:badge size="sm" color="">--</flux:badge>
+                                    @break
+
+                                @case ($memberType === 'SINGLE')
+                                    <flux:badge size="sm" color="">--</flux:badge>
+                                    @break
+
+                                @case ($memberType === 'JOINT')
+                                    <flux:text color="blue" variant="strong">
+                                        <b>{{ $member->secondary_firstname }} {{ $member->secondary_middlename ?? '' }} {{ $member->secondary_lastname ?? null }} {{ $member->secondary_suffixname ?? null}}</b>
+                                    </flux:text>
+                                    @break
+                            @endswitch
                         </flux:table.cell>
                         <flux:table.cell>
-                            <flux:button 
+                            <flux:badge color="zinc" size="sm" variant="subtle" style="letter-spacing:2px;">{{ $member->membership_no ?? '--' }}</flux:badge>
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            <flux:button
                                 icon="eye"
                                 color="cyan"
                                 variant="primary"
                                 size="sm"
-                                class="cursor-pointer"
                                 href="{{ route('members.view', [
-                                        'xR' => $member->xR,
-                                        'membershipNo' => $member->membershipNo,
+                                    'membership_id' => $member->membership_id,
+                                    'membership_no' => $member->membership_no,
                                 ]) }}"
                                 >
-                                View 
+                                View
                             </flux:button>
                             <flux:button 
                                 icon="plus-circle"
@@ -235,7 +276,7 @@ new class extends Component
                                 variant="primary"
                                 size="sm"
                                 class="cursor-pointer"
-                                wire:click="checkRegistration('{{ $member->xR }}', '{{ $member->membershipNo }}')"
+                                wire:click="checkRegistration('{{ $member->membership_id }}', '{{ $member->membership_no }}')"
                                 confirm="Are you sure you want to register this member?"
                                 >
                                 Register
