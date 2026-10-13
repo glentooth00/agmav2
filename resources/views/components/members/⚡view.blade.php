@@ -128,18 +128,12 @@ new class extends Component {
                     <span class="text-zinc-500">Contact No.</span>
                     <span>{{ $member->ContactNo ?? '-' }}</span>
                 </div>
-
             </div>
-
         </flux:card>
-
         <!-- Membership -->
         <flux:card>
-
             <flux:heading size="lg">Membership Information</flux:heading>
-
             <div class="mt-5 space-y-3">
-
                 <div class="flex justify-between">
                     <span class="text-zinc-500">Membership ID</span>
                     <span>{{ $member->membership_id }}</span>
@@ -166,7 +160,6 @@ new class extends Component {
                         <span>{{ $member->secondary_firstname }} {{ $member->secondary_middlename ?? '' }} {{ $member->secondary_lastname ?? null }} {{ $member->secondary_suffixname ?? null}}</span>
                     </div>
                 @endif
-
             </div>
 
         </flux:card>
@@ -190,9 +183,11 @@ new class extends Component {
                         {{-- Replace $member->electricAccounts with your actual relationship --}}
                         @forelse ($electricAccounts as $electricAccount)
                             <flux:table.row>
-                                <flux:table.cell>
-                                    {{ $electricAccount->c_id }}
-                                </flux:table.cell>
+                            <flux:table.cell>
+                                <flux:badge size="sm" color="blue" class="font-bold fw-bold">
+                                    <b>{{ $electricAccount->c_id }}</b>
+                                </flux:badge>
+                            </flux:table.cell>
 
                                 <flux:table.cell>
                                     {{ $electricAccount->address }}
@@ -213,7 +208,7 @@ new class extends Component {
                                 <flux:table.cell>
                                     @switch (strtoupper(trim($electricAccount->r_description ?? '')))
                                         @case('RESIDENTIAL')
-                                            <flux:badge size="sm" color="green">
+                                            <flux:badge size="sm" color="orange">
                                                 RESIDENTIAL
                                             </flux:badge>
                                             @break
@@ -231,7 +226,7 @@ new class extends Component {
                                             @break
 
                                         @case('COMMERCIAL LOW VOLTAGE')
-                                            <flux:badge size="sm" color="blue">
+                                            <flux:badge size="sm" color="zinc">
                                                 COMMERCIAL LOW VOLTAGE
                                             </flux:badge>
                                             @break
@@ -255,9 +250,6 @@ new class extends Component {
                     </flux:table.rows>
                 </flux:table>
             </div>
-
         </flux:card>
-
     </div>
-
 </div>
