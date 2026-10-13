@@ -17,6 +17,8 @@ new class extends Component
     public string $middlename = '';
     public string $lastname = '';
     public string $suffixname = '';
+    public string $membership_id = '';
+    public string $membership_no = '';
 
 
     public function updatedGivenName()
@@ -91,8 +93,8 @@ new class extends Component
                     // Regular members
                     $query->whereNotNull('firstname')
                         ->where('firstname', '<>', '')
-                        ->whereNotNull('MiddleName')
-                        ->where('MiddleName', '<>', '')
+                        ->whereNotNull('middleName')
+                        ->where('middleName', '<>', '')
                         ->whereNotNull('lastname')
                         ->where('lastname', '<>', '');
                 });
@@ -101,7 +103,7 @@ new class extends Component
                 $query->where('firstname', 'LIKE', "%{$this->firstname}%");
             })
             ->when($this->middlename, function ($query) {
-                $query->where('MiddleName', 'LIKE', "%{$this->middlename}%");
+                $query->where('middleName', 'LIKE', "%{$this->middlename}%");
             })
             ->when($this->lastname, function ($query) {
                 $query->where('lastname', 'LIKE', "%{$this->lastname}%");
@@ -120,10 +122,9 @@ new class extends Component
         ];
     }
 
+    public function checkRegistration($membership_id, $membership_no){
 
-    public function checkRegistration($xR, $membershipNo){
-
-        $checkRegistration = Attendees::where('membership_id', $xR)->where('membership_no', $membershipNo)->first();
+        $checkRegistration = Attendees::where('membership_id', $membership_id)->where('membership_no', $membership_no)->first();
         
         if($checkRegistration){
             
@@ -135,7 +136,7 @@ new class extends Component
 
         }else{
 
-            $this->getConnection($xR, $membershipNo);
+            $this->getConnection($membership_id, $membership_no);
         }
         
     }
@@ -151,7 +152,7 @@ new class extends Component
         <flux:separator />
     </div>
     <div class="flex items-center gap-3">
-    <flux:field class="w-32">
+    <flux:field class="w-64">
         <flux:input
             wire:model.live.debounce.300ms="firstname"
             icon="magnifying-glass"
@@ -181,7 +182,7 @@ new class extends Component
         />
     </flux:field>
     <flux:field class="w-64">
-        <flux:select wire:model.live.debounce.300ms="town" placeholder="Select town">
+        <flux:select wire:model.live.debounce.300ms="district" placeholder="Select town">
             @foreach ($towns as $town)
                 <flux:select.option>{{ $town->TownName }}</flux:select.option>
             @endforeach
@@ -201,7 +202,11 @@ new class extends Component
         <flux:table.rows>
             @forelse ($members as $member)
                 <flux:table.row>
-                        <flux:table.cell>{{ $member->firstname }} {{ $member->middlename ?? '' }} {{ $member->lastname ?? null }} {{ $member->suffixname ?? null}}</flux:table.cell>
+                        <flux:table.cell>
+                            <flux:text variant="strong" class="text-gray-600">
+                                <b>{{ $member->firstname }} {{ $member->middlename ?? '' }} {{ $member->lastname ?? null }} {{ $member->suffixname ?? null}}</b>
+                            </flux:text>    
+                        </flux:table.cell>
                         <flux:table.cell>
                             {{ $member->street }}
                             {{ $member->brgy }},
@@ -210,7 +215,7 @@ new class extends Component
                         <flux:table.cell>
                             @php
                                 $memberType = strtoupper(trim($member->member_type ?? ''));
-                            $isJuridical = strtoupper(trim((string) ($member->is_juridical ?? '0')));
+                                $isJuridical = strtoupper(trim((string) ($member->is_juridical ?? '0')));
                             @endphp
 
                             @switch (true)
@@ -219,44 +224,51 @@ new class extends Component
                                     @break
 
                                 @case ($memberType === 'SINGLE')
-                                    <flux:badge size="sm" color="green">Member</flux:badge>
+                                    <flux:badge size="sm" color="green">SINGLE</flux:badge>
                                     @break
 
                                 @case ($memberType === 'JOINT')
-                                    <flux:badge size="sm" color="blue">Co-Member</flux:badge>
+                                    <flux:badge size="sm" color="blue">JOINT</flux:badge>
                                     @break
                             @endswitch
                         </flux:table.cell>
                         <flux:table.cell>
-                            @if ($member->member_Type === 'Member')
-                                @if ($member->verified === 'True')
-                                    <flux:badge size="sm" color="lime">Verified</flux:badge>
-                                @else
-                                    <flux:badge size="sm" color="orange">Unverified</flux:badge>
-                                @endif
-                            @elseif ($member->member_Type === 'Co-member')
-                                @if ($member->verified === 'False')
-                                    <flux:badge size="sm" color="lime">Verified</flux:badge>
-                                @endif
-                            @endif
+                            @php
+                                $memberType = strtoupper(trim($member->member_type ?? ''));
+                                $isJuridical = strtoupper(trim((string) ($member->is_juridical ?? '0')));
+                            @endphp
+
+                            @switch (true)
+                                @case ($isJuridical === '1' || $isJuridical === 'YES' || $memberType === 'JURIDICAL')
+                                    <flux:badge size="sm" color="">--</flux:badge>
+                                    @break
+
+                                @case ($memberType === 'SINGLE')
+                                    <flux:badge size="sm" color="">--</flux:badge>
+                                    @break
+
+                                @case ($memberType === 'JOINT')
+                                    <flux:text color="blue" variant="strong">
+                                        <b>{{ $member->secondary_firstname }} {{ $member->secondary_middlename ?? '' }} {{ $member->secondary_lastname ?? null }} {{ $member->secondary_suffixname ?? null}}</b>
+                                    </flux:text>
+                                    @break
+                            @endswitch
                         </flux:table.cell>
                         <flux:table.cell>
                             <flux:badge color="zinc" size="sm" variant="subtle" style="letter-spacing:2px;">{{ $member->membership_no ?? '--' }}</flux:badge>
                         </flux:table.cell>
-                       
                         <flux:table.cell>
-                            <flux:button 
+                            <flux:button
                                 icon="eye"
                                 color="cyan"
                                 variant="primary"
                                 size="sm"
-                                class="cursor-pointer"
                                 href="{{ route('members.view', [
-                                        'xR' => $member->xR,
-                                        'membershipNo' => $member->membershipNo,
+                                    'membership_id' => $member->membership_id,
+                                    'membership_no' => $member->membership_no,
                                 ]) }}"
                                 >
-                                View 
+                                View
                             </flux:button>
                             <flux:button 
                                 icon="plus-circle"
@@ -264,7 +276,7 @@ new class extends Component
                                 variant="primary"
                                 size="sm"
                                 class="cursor-pointer"
-                                wire:click="checkRegistration('{{ $member->xR }}', '{{ $member->membershipNo }}')"
+                                wire:click="checkRegistration('{{ $member->membership_id }}', '{{ $member->membership_no }}')"
                                 confirm="Are you sure you want to register this member?"
                                 >
                                 Register

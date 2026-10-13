@@ -14,7 +14,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
     Route::livewire('/members', 'members.index')->name('members.index');
-    Route::livewire('/members/{xR?}/{membershipNo?}', 'members.view')->name('members.view');
+    Route::livewire('/members/{membership_id}/{membership_no?}', 'members.view')->name('members.view');
 
     Route::livewire('/Attendees', 'attendees.index')->name('attendees.index');
 
